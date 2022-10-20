@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <link rel="shortcut icon" href="#">
+  <title>게시글 입력</title>
+</head>
+<body>
+<h2>게시글 입력</h2>
+<form role="AddForm" action="/board/SaveForm" method="post" th:object="${Addform}">
+  <div>
+    <input type="text" th:field="${Addform.title}" placeholder="제목을 입력해주세요">
+    <div th:errors="${Addform.title}"></div>
+  </div>
+  <div>
+    <input type="text" th:field="${Addform.content}" placeholder="내용을 입력해주세요">
+    <div th:errors="${Addform.content}"></div>
+  </div>
+  <button type="submit">게시글 등록</button>
+</form>
+
+</body>
+</html>

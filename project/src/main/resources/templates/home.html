@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <link rel="shortcut icon" href="#">
+  <link href="/css/rainbow.css" rel="stylesheet">
+    <title>메인 Home 페이지</title>
+</head>
+<body>
+<div class="test" th:if="${session.loginMember == null}">
+  <button  th:onclick="|location.href='@{/members/save}'|">회원가입</button>
+  <button th:onclick="|location.href='@{/members/login}'|">로그인</button>
+  <button th:onclick="|location.href='@{/board/list}'|">게시글 전체보기</button>
+</div>
+
+<!-- 로그인하고나서 로그아웃버튼으로 바꾸기 -->
+<div th:if="${session.loginMember != null}">
+  <button th:onclick="|location.href='@{/members/logout}'|">로그아웃</button>
+  <button th:onclick="|location.href='@{/board/Add}'|">게시글 작성</button>
+  <button th:onclick="|location.href='@{/board/list}'|">게시글 전체보기</button>
+
+</div>
+
+
+</body>
+</html>
+

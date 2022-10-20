@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <link rel="shortcut icon" href="#">
+    <title>게시글 수정 </title>
+</head>
+<body>
+<h2> 게시글 수정</h2>
+<form role="form" action="/board/update" method="post" th:object="${update}">
+  <div>
+    <input type="text" th:value="${update.title}" name="title">
+    <div th:errors="${update.title}"></div>
+  </div>
+  <div>
+    <input type="text" th:value="${update.content}" name="content">
+    <div th:errors="${update.content}"></div>
+  </div>
+
+<!--<div>-->
+<!--  <form role="form" action="/board/update" method="POST" th:object="${update}">-->
+<!--  <input type="text" th:value="${board.title}" name="title" >-->
+<!--  <div th:errors="${update.title}"></div>-->
+<!--</div>-->
+<!--<div>-->
+<!--  <input type="text" th:value="${board.content}" name="content" >-->
+<!--  <div th:errors="${update.content}"></div>-->
+<!--</div>-->
+
+  <div>
+    <button type="submit"> 수정하기 </button>
+    <button th:onclick="|location.href='@{/board/delete}'|">삭제하기</button>
+  </div>
+
+</form>
+</body>
+</html>

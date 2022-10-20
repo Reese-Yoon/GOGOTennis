@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="#">
+    <title>회원가입 창</title>
+</head>
+<body>
+<form role="form" action="/members/waveform" method="POST" th:object="${signInfo}">
+    <div>
+        <input type="text" th:field="${signInfo.loginId}" placeholder="아이디를 입력하세요">
+        <div th:errors="${signInfo.loginId}"></div>
+    </div>
+    <div>
+        <input type="text" th:field="${signInfo.password}" placeholder="비밀번호를 입력하세요.">
+        <div th:errors="${signInfo.password}"></div>
+    </div>
+    <div>
+        <input type="text" th:field="${signInfo.nickname}" placeholder="별명을 입력하세요">
+        <div th:errors="${signInfo.nickname}"></div>
+    </div>
+    <div>
+        <input type="text" th:field="${signInfo.email}" placeholder="이메일을 입력하세요.">
+        <div th:errors="${signInfo.email}"></div>
+    </div>
+    <button type="submit">제출</button>
+</form>
+
+
+</body>
+</html>

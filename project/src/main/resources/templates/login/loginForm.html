@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta http-equiv="Content-Type>" content="text/html; charset=UTF-8"/>
+  <link rel="shortcut icon" href="#">
+  <title>Title</title>
+</head>
+<body>
+<div>
+  <form role="form" action="/members/login_check" method="POST" th:object="${loginForm}">
+    <div th:if="${#fields.hasGlobalErrors()}">
+      <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+    </div>
+    <div>
+      <input type="text" th:field="${loginForm.loginId}">
+      <div th:errors="${loginForm.loginId}"></div>
+    </div>
+    <div>
+      <input type="text" th:field="${loginForm.password}">
+      <div th:errors="${loginForm.password}"></div>
+    </div>
+    <button type="submit">로그인</button>
+  </form>
+</div>
+
+</body>
+</html>
