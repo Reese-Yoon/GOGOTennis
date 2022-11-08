@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title>Tennis</title>
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet"/>
+    <!-- CSS Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <!-- CSS -->
+    <link href="/css/styles.css" rel="stylesheet"/>
+    <link href="/css/banner.css" rel="stylesheet"/>
+    <link href="/css/menu.css" rel="stylesheet"/>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.1.js"
+            integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI="
+            crossorigin="anonymous"></script>
+    <!-- JS Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+            crossorigin="anonymous"></script>
+    <!--TimePicker-->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+
+    <!-- 카카오 지도 API -->
+    <style>
+        .map_wrap, .map_wrap * {margin:0;padding:0;font-family:'Malgun Gothic',dotum,'돋움',sans-serif;font-size:12px;}
+        .map_wrap a, .map_wrap a:hover, .map_wrap a:active{color:#000;text-decoration: none;}
+        .map_wrap {position:relative;width:100%;height:500px;}
+        #menu_wrap {position:absolute;top:0;left:0;bottom:0;width:250px;margin:10px 0 30px 10px;padding:5px;overflow-y:auto;background:rgba(255, 255, 255, 0.7);z-index: 1;font-size:12px;border-radius: 10px;}
+        .bg_white {background:#fff;}
+        #menu_wrap hr {display: block; height: 1px;border: 0; border-top: 2px solid #5F5F5F;margin:3px 0;}
+        #menu_wrap .option{text-align: center;}
+        #menu_wrap .option p {margin:10px 0;}
+        #menu_wrap .option button {margin-left:5px;}
+        #placesList li {list-style: none;}
+        #placesList .item {position:relative;border-bottom:1px solid #888;overflow: hidden;cursor: pointer;min-height: 65px;}
+        #placesList .item span {display: block;margin-top:4px;}
+        #placesList .item h5, #placesList .item .info {text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
+        #placesList .item .info{padding:10px 0 10px 55px;}
+        #placesList .info .gray {color:#8a8a8a;}
+        #placesList .info .jibun {padding-left:26px;background:url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/places_jibun.png) no-repeat;}
+        #placesList .info .tel {color:#009900;}
+        #placesList .item .markerbg {float:left;position:absolute;width:36px; height:37px;margin:10px 0 0 10px;background:url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png) no-repeat;}
+        #placesList .item .marker_1 {background-position: 0 -10px;}
+        #placesList .item .marker_2 {background-position: 0 -56px;}
+        #placesList .item .marker_3 {background-position: 0 -102px}
+        #placesList .item .marker_4 {background-position: 0 -148px;}
+        #placesList .item .marker_5 {background-position: 0 -194px;}
+        #placesList .item .marker_6 {background-position: 0 -240px;}
+        #placesList .item .marker_7 {background-position: 0 -286px;}
+        #placesList .item .marker_8 {background-position: 0 -332px;}
+        #placesList .item .marker_9 {background-position: 0 -378px;}
+        #placesList .item .marker_10 {background-position: 0 -423px;}
+        #placesList .item .marker_11 {background-position: 0 -470px;}
+        #placesList .item .marker_12 {background-position: 0 -516px;}
+        #placesList .item .marker_13 {background-position: 0 -562px;}
+        #placesList .item .marker_14 {background-position: 0 -608px;}
+        #placesList .item .marker_15 {background-position: 0 -654px;}
+        #pagination {margin:10px auto;text-align: center;}
+        #pagination a {display:inline-block;margin-right:10px;}
+        #pagination .on {font-weight: bold; cursor: default;color:#777;}
+    </style>
+</head>
+
+<body class="pt-6">
+<!-- Navigation-->
+<!-- Navigation-->
+<nav th:replace="fragments/bodyheader :: bodyHeader"></nav>
+
+<div class="container">
+
+    <h6 class="p-3 mb-2 bg-primary text-white">매칭 상세 정보</h6>
+    <div class="matching-header"> <!-- 매칭 헤더 -->
+        <h3 th:text="${matching.title}"></h3>
+        <table>
+            <thead>
+            <tr>
+                <th>생성자:
+                    <img th:src="@{/images/user.png}" alt="logo" height="15" width="20">
+                    <a th:text="${matching.author}"></a>
+                </th>
+            </tr>
+            <tr>
+                <th>작성일:
+                    <img th:src="@{/images/clock.png}" alt="logo" height="15" width="20">
+                    <a th:text="${matching.createdDate}"></a>
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <hr class="mt-4">
+    <h6 class="fw-bolder">매치 정보</h6>
+
+    <table th:border="1">
+        <tr>
+            <th>매칭 날짜</th>
+            <td><a th:text="${matching.matchingDate}"></a></td>
+        </tr>
+        <tr>
+            <th>시작 시간</th>
+            <td><a id="start" th:text="${matching.matchingStartTime}"></a></td>
+        </tr>
+        <tr>
+            <th>종료 시간</th>
+            <td><a id="end" th:text="${matching.matchingEndTime}"></a></td>
+        </tr>
+        <tr>
+            <th>매칭 종류</th>
+            <td><a th:text="${matching.matchingType.title}"></a></td>
+        </tr>
+        <tr>
+            <th>코트 종류</th>
+            <td><a th:text="${matching.courtType.title}"></a></td>
+        </tr>
+        <tr>
+            <th>매칭 장소</th>
+            <td><a th:text="${matching.place}"></a></td>
+        </tr>
+    </table>
+
+    <!-- 팀 정보 -->
+    <h6 class="fw-bolder mt-4">참가자 정보</h6>
+    <img src="/images/match2.png" class="w-100">
+    <div class="row d-flex justify-content-center my-3">
+        <div class="col-4 text-center d-flex justify-content-center flex-shrink-0" style="border-radius: 40px;">
+            <div th:each="a:${playersA}">
+                <img src="/images/profile.png" alt="" style="width: 200px; min-width: 100px" class="rounded-circle img-fluid"/>
+                <p class="mt-1 small" th:text="${a.member.nickname}">사용자1</p>
+            </div>
+            <div th:if="${matching.matchingType.title.equals('복식') and playersA.size() < 2}">
+                <img src="/images/profile2.png" alt="" style="width: 200px; min-width: 100px" class="rounded-circle img-fluid"/>
+                <p class="mt-1 small">비어있음</p>
+            </div>
+        </div>
+        <div class="col-2 flex-shrink-1"></div>
+        <div class="col-4 text-center d-flex justify-content-center flex-shrink-0" style="border-radius: 40px;">
+            <div th:each="b:${playersB}">
+                <img src="/images/profile.png" alt="" style="width: 200px; min-width: 100px" class="rounded-circle img-fluid"/>
+                <p class="mt-1 small" th:text="${b.member.nickname}">사용자3</p>
+            </div>
+            <div th:if="${playersB.size() == 0}">
+                <img src="/images/profile2.png" alt="" style="width: 200px; min-width: 100px" class="rounded-circle img-fluid"/>
+                <p class="mt-1 small">비어있음</p>
+            </div>
+            <div th:if="${matching.matchingType.title.equals('복식') and playersB.size() < 2}">
+                <img src="/images/profile2.png" alt="" style="width: 200px; min-width: 100px" class="rounded-circle img-fluid"/>
+                <p class="mt-1 small">비어있음</p>
+            </div>
+        </div>
+    </div> <!--팀 정보 끝 -->
+
+    <hr class="mt-4">
+    <h6 class="fw-bolder">매치 소개</h6>
+    <p class="text-center py-5">
+        매치 소개 내용이 없습니다.
+    </p>
+    <hr class="mt-4">
+    <h6 class="fw-bolder">매치 장소</h6>
+    <p class="mb-1"><i class="bi bi-geo-alt-fill text-muted me-1 ms-3"></i>올림픽 경기장</p>
+    <div class="d-flex justify-content-center">
+        <div class="map_wrap">
+            <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
+
+            <div id="menu_wrap" class="bg_white">
+                <div class="option">
+                    <div>
+                        <form onsubmit="searchPlaces(); return false;">
+                            키워드 : <input type="text" value="이태원 맛집" id="keyword" size="15">
+                            <button type="submit">검색하기</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="hAddr">
+                    <span class="title">지도중심기준 행정동 주소정보</span>
+                    <span id="centerAddr"></span>
+                </div>
+                <hr>
+                <ul id="placesList"></ul>
+                <div id="pagination"></div>
+            </div>
+        </div>
+    </div>
+    <hr class="mt-4">
+    <div class="row">
+
+        <div class="col-4">
+            <a type="button" class="btn btn-primary" th:onclick="|location.href='@{/matching/home}'|">이전</a>
+        </div>
+
+        <div class="col-4 d-flex justify-content-center gap-3">
+            <div th:if="${playerMemberCheck == null and matching.matchingCondition.title == '신청가능'}">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teamModal">매치 신청</button>
+            </div>
+            <!--매칭에 참가된 인원이면서 매칭 마감이 안된 경우-->
+            <form th:action="@{/matching/delete/memberDelete/{id} (id=${matching.id})}" method="post">
+                <input hidden name="memberId" th:value="${session.loginMember.id}"/>
+                <input hidden name="matchingId" th:value="${matching.id}"/>
+                <!--매칭에 참가된 인원이면서 매칭 마감이 안된 경우-->
+                <div th:if="${playerMemberCheck != null and matching.matchingCondition.title == '신청가능' and session.loginMember.id != matching.member.id}">
+                    <button type="submit" class="btn btn-primary">매칭 참가 취소</button>
+                </div>
+            </form>
+            <div th:if="${session.loginMember.id == matching.member.id}">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#resultModal">매치 결과 등록</button>
+            </div>
+        </div>
+        <div class="col-4 d-flex justify-content-end gap-2" th:if="${session.loginMember.id == matching.member.id}">
+            <a type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#matchUpdateModal">수정</a>
+            <form th:action="@{/matching/delete/{id} (id=${matching.id})}" method="post">
+                <button type="submit" class="btn btn-primary">삭제</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 매치 팀 선택 Modal -->
+<div class="modal fade" id="teamModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fs-2" id="teamModalLabel">매치 팀 선택</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form th:object="${playerAddForm}" th:action="@{/matching/player/add}" method="post">
+                    <input hidden name="memberId" th:value="${session.loginMember.id}"/>
+                    <input hidden name="matchingId" th:value="${matching.id}"/>
+                    <div class="mb-3">
+                        <div class="form-label">팀</div>
+                        <input type="radio" th:field="${playerAddForm.team}" value="A">A
+                        <input type="radio" th:field="${playerAddForm.team}" value="B">B
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                        <button type="submit" class="btn btn-primary">등록하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 팀선택 모달 끝 -->
+
+<!-- 매치결과 Modal -->
+<div class="modal fade" id="resultModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fs-2" id="resultModalLabel">RESULT</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form th:action="@{/matching/result}" th:object="${resultForm}" method="POST">
+                    <input hidden th:field="${matching.id}">
+                    <div class="mb-3">
+                        <div class="form-label">게임 결과</div>
+                        <div th:each="gresult : ${results}" class="form-check form-check-inline">
+                            <input type="radio" th:field="*{gameResult}" th:value="${gresult.name()}" class="form-check-input">
+                            <label th:for="${#ids.prev('gameResult')}" th:text="${gresult.title}" class="form-check-label"></label>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                        <button type="submit" class="btn btn-primary">등록하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 매치결과 모달 끝 -->
+
+<!-- 매치수정 모달 -->
+<div class="modal fade" id="matchUpdateModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fs-2" id="matchUpdateModalLabel">매치 생성</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form th:action="@{/matching/update/{id} (id=${matchingForm.id})}" th:object="${matchingForm}" method="POST">
+                    <input type="hidden" th:field="${matchingForm.id}">
+                    <div class="mb-3">
+                        <label for="matchingTitle" class="form-label">매칭 이름<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" th:field="${matchingForm.title}" id="matchingTitle" placeholder="매치 이름을 입력해주세요" required>
+                        <div th:errors="${matchingForm.title}" class="text-danger"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="matchingDate" class="form-label">매칭 날짜<span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" th:field="${matchingForm.matchingDate}" id="matchingDate" placeholder="매치 날짜를 입력해주세요" required>
+                        <div th:errors="${matchingForm.matchingDate}" class="text-danger"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="matchingStartTime" class="form-label">시작 시간<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" th:field="${matchingForm.matchingStartTime}" id="matchingStartTime" placeholder="시작 시간을 입력해주세요" required>
+                        <div th:errors="${matchingForm.matchingStartTime}" class="text-danger"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="matchingEndTime" class="form-label">종료 시간<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" th:field="${matchingForm.matchingEndTime}" id="matchingEndTime" placeholder="종료 시간을 입력해주세요" required>
+                        <div th:errors="${matchingForm.matchingEndTime}" class="text-danger"></div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-label">매칭 종류<span class="text-danger">*</span></div>
+                        <div th:each="match : ${matchTypes}" class="form-check form-check-inline">
+                            <input type="radio" th:field="*{matchingType}" th:value="${match.name()}" class="form-check-input">
+                            <label th:for="${#ids.prev('matchingType')}" th:text="${match.title}" class="form-check-label"></label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-label">코트 종류<span class="text-danger">*</span></div>
+                        <div th:each="court : ${courtTypes}" class="form-check form-check-inline">
+                            <input type="radio" th:field="*{courtType}" th:value="${court.name()}" class="form-check-input">
+                            <label th:for="${#ids.prev('courtType')}" th:text="${court.title}" class="form-check-label"></label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="matchingPlace" class="form-label">매칭 장소<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" th:field="${matchingForm.place}" id="matchingPlace" placeholder="매창 장소를 입력해주세요" required>
+                        <div th:errors="${matchingForm.place}" class="text-danger"></div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                        <button type="submit" class="btn btn-primary">등록하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 매치수정 모달 끝 -->
+
+<!-- Footer-->
+<footer class="footer bg-white small text-center text-black-50">
+    <div class="container px-4 px-lg-5">Copyright &copy; 우아한1팀 Website 2022</div>
+</footer>
+
+<!-- JS-->
+<script th:src="@{/js/matchingDate.js}"></script>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=45acc46c41ba5b2c11cd52ac12e6960a&libraries=services"></script>
+
+<script>
+    // 마커를 담을 배열입니다
+    var markers = [];
+
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+        mapOption = {
+            center: new kakao.maps.LatLng(37.566826, 126.9786567), // 지도의 중심좌표
+            level: 3 // 지도의 확대 레벨
+        };
+
+    // 지도를 생성합니다
+    var map = new kakao.maps.Map(mapContainer, mapOption);
+
+    // 장소 검색 객체를 생성합니다
+    var ps = new kakao.maps.services.Places();
+
+    // 검색 결과 목록이나 마커를 클릭했을 때 장소명을 표출할 인포윈도우를 생성합니다
+    var infowindow = new kakao.maps.InfoWindow({zIndex:1});
+
+    // 주소-좌표 변환 객체를 생성합니다
+    var geocoder = new kakao.maps.services.Geocoder();
+
+    var geocoder = new kakao.maps.services.Geocoder(), // 좌표계 변환 객체를 생성합니다
+        wtmX = 160082.538257218, // 변환할 WTM X 좌표 입니다
+        wtmY = -4680.975749087054; // 변환할 WTM Y 좌표 입니다
+
+    var marker = new kakao.maps.Marker(), // 클릭한 위치를 표시할 마커입니다
+        infowindow = new kakao.maps.InfoWindow({zindex:1}); // 클릭한 위치에 대한 주소를 표시할 인포윈도우입니다
+
+    // 현재 지도 중심좌표로 주소를 검색해서 지도 좌측 상단에 표시합니다
+    searchAddrFromCoords(map.getCenter(), displayCenterInfo);
+
+    // 키워드로 장소를 검색합니다
+    searchPlaces();
+
+    // 키워드 검색을 요청하는 함수입니다
+    function searchPlaces() {
+
+        var keyword = document.getElementById('keyword').value;
+
+        if (!keyword.replace(/^\s+|\s+$/g, '')) {
+            alert('키워드를 입력해주세요!');
+            return false;
+        }
+
+        // 장소검색 객체를 통해 키워드로 장소검색을 요청합니다
+        ps.keywordSearch( keyword, placesSearchCB);
+    }
+
+    // 장소검색이 완료됐을 때 호출되는 콜백함수 입니다
+    function placesSearchCB(data, status, pagination) {
+        if (status === kakao.maps.services.Status.OK) {
+
+            // 정상적으로 검색이 완료됐으면
+            // 검색 목록과 마커를 표출합니다
+            displayPlaces(data);
+
+            // 페이지 번호를 표출합니다
+            displayPagination(pagination);
+
+        } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+
+            alert('검색 결과가 존재하지 않습니다.');
+            return;
+
+        } else if (status === kakao.maps.services.Status.ERROR) {
+
+            alert('검색 결과 중 오류가 발생했습니다.');
+            return;
+
+        }
+    }
+
+    // 검색 결과 목록과 마커를 표출하는 함수입니다
+    function displayPlaces(places) {
+
+        var listEl = document.getElementById('placesList'),
+            menuEl = document.getElementById('menu_wrap'),
+            fragment = document.createDocumentFragment(),
+            bounds = new kakao.maps.LatLngBounds(),
+            listStr = '';
+
+        // 검색 결과 목록에 추가된 항목들을 제거합니다
+        removeAllChildNods(listEl);
+
+        // 지도에 표시되고 있는 마커를 제거합니다
+        removeMarker();
+
+        for ( var i=0; i<places.length; i++ ) {
+
+            // 마커를 생성하고 지도에 표시합니다
+            var placePosition = new kakao.maps.LatLng(places[i].y, places[i].x),
+                marker = addMarker(placePosition, i),
+                itemEl = getListItem(i, places[i]); // 검색 결과 항목 Element를 생성합니다
+
+            // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
+            // LatLngBounds 객체에 좌표를 추가합니다
+            bounds.extend(placePosition);
+
+            // 마커와 검색결과 항목에 mouseover 했을때
+            // 해당 장소에 인포윈도우에 장소명을 표시합니다
+            // mouseout 했을 때는 인포윈도우를 닫습니다
+            (function(marker, title) {
+                kakao.maps.event.addListener(marker, 'mouseover', function() {
+                    displayInfowindow(marker, title);
+                });
+
+                kakao.maps.event.addListener(marker, 'mouseout', function() {
+                    infowindow.close();
+                });
+
+                itemEl.onmouseover =  function () {
+                    displayInfowindow(marker, title);
+                };
+
+                itemEl.onmouseout =  function () {
+                    infowindow.close();
+                };
+            })(marker, places[i].place_name);
+
+            fragment.appendChild(itemEl);
+        }
+
+        // 검색결과 항목들을 검색결과 목록 Element에 추가합니다
+        listEl.appendChild(fragment);
+        menuEl.scrollTop = 0;
+
+        // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
+        map.setBounds(bounds);
+    }
+
+    // 지도를 클릭했을 때 클릭 위치 좌표에 대한 주소정보를 표시하도록 이벤트를 등록합니다
+    kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+        searchDetailAddrFromCoords(mouseEvent.latLng, function(result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                var detailAddr = !!result[0].road_address ? '<div>도로명주소 : ' + result[0].road_address.address_name + '</div>' : '';
+                detailAddr += '<div>지번 주소 : ' + result[0].address.address_name + '</div>';
+
+                var content = '<div class="bAddr">' +
+                    '<span class="title">법정동 주소정보</span>' +
+                    detailAddr +
+                    '</div>';
+
+                // 마커를 클릭한 위치에 표시합니다
+                marker.setPosition(mouseEvent.latLng);
+                marker.setMap(map);
+
+                // 인포윈도우에 클릭한 위치에 대한 법정동 상세 주소정보를 표시합니다
+                infowindow.setContent(content);
+                infowindow.open(map, marker);
+            }
+        });
+    });
+
+    // 중심 좌표나 확대 수준이 변경됐을 때 지도 중심 좌표에 대한 주소 정보를 표시하도록 이벤트를 등록합니다
+    kakao.maps.event.addListener(map, 'idle', function() {
+        searchAddrFromCoords(map.getCenter(), displayCenterInfo);
+    });
+
+    function searchAddrFromCoords(coords, callback) {
+        // 좌표로 행정동 주소 정보를 요청합니다
+        geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), callback);
+    }
+
+    function searchDetailAddrFromCoords(coords, callback) {
+        // 좌표로 법정동 상세 주소 정보를 요청합니다
+        geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
+    }
+
+    // 지도 좌측상단에 지도 중심좌표에 대한 주소정보를 표출하는 함수입니다
+    function displayCenterInfo(result, status) {
+        if (status === kakao.maps.services.Status.OK) {
+            var infoDiv = document.getElementById('centerAddr');
+
+            for(var i = 0; i < result.length; i++) {
+                // 행정동의 region_type 값은 'H' 이므로
+                if (result[i].region_type === 'H') {
+                    infoDiv.innerHTML = result[i].address_name;
+                    break;
+                }
+            }
+        }
+    }
+
+    // 검색결과 항목을 Element로 반환하는 함수입니다
+    function getListItem(index, places) {
+
+        var el = document.createElement('li'),
+            itemStr = '<span class="markerbg marker_' + (index+1) + '"></span>' +
+                '<div class="info">' +
+                '   <h5>' + places.place_name + '</h5>';
+
+        if (places.road_address_name) {
+            itemStr += '    <span>' + places.road_address_name + '</span>' +
+                '   <span class="jibun gray">' +  places.address_name  + '</span>';
+        } else {
+            itemStr += '    <span>' +  places.address_name  + '</span>';
+        }
+
+        itemStr += '  <span class="tel">' + places.phone  + '</span>' +
+            '</div>';
+
+        el.innerHTML = itemStr;
+        el.className = 'item';
+
+        return el;
+    }
+
+    // 마커를 생성하고 지도 위에 마커를 표시하는 함수입니다
+    function addMarker(position, idx, title) {
+        var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
+            imageSize = new kakao.maps.Size(36, 37),  // 마커 이미지의 크기
+            imgOptions =  {
+                spriteSize : new kakao.maps.Size(36, 691), // 스프라이트 이미지의 크기
+                spriteOrigin : new kakao.maps.Point(0, (idx*46)+10), // 스프라이트 이미지 중 사용할 영역의 좌상단 좌표
+                offset: new kakao.maps.Point(13, 37) // 마커 좌표에 일치시킬 이미지 내에서의 좌표
+            },
+            markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imgOptions),
+            marker = new kakao.maps.Marker({
+                position: position, // 마커의 위치
+                image: markerImage
+            });
+
+        marker.setMap(map); // 지도 위에 마커를 표출합니다
+        markers.push(marker);  // 배열에 생성된 마커를 추가합니다
+
+        return marker;
+    }
+
+    // 지도 위에 표시되고 있는 마커를 모두 제거합니다
+    function removeMarker() {
+        for ( var i = 0; i < markers.length; i++ ) {
+            markers[i].setMap(null);
+        }
+        markers = [];
+    }
+
+    // 검색결과 목록 하단에 페이지번호를 표시는 함수입니다
+    function displayPagination(pagination) {
+        var paginationEl = document.getElementById('pagination'),
+            fragment = document.createDocumentFragment(),
+            i;
+
+        // 기존에 추가된 페이지번호를 삭제합니다
+        while (paginationEl.hasChildNodes()) {
+            paginationEl.removeChild (paginationEl.lastChild);
+        }
+
+        for (i=1; i<=pagination.last; i++) {
+            var el = document.createElement('a');
+            el.href = "#";
+            el.innerHTML = i;
+
+            if (i===pagination.current) {
+                el.className = 'on';
+            } else {
+                el.onclick = (function(i) {
+                    return function() {
+                        pagination.gotoPage(i);
+                    }
+                })(i);
+            }
+
+            fragment.appendChild(el);
+        }
+        paginationEl.appendChild(fragment);
+    }
+
+    // 검색결과 목록 또는 마커를 클릭했을 때 호출되는 함수입니다
+    // 인포윈도우에 장소명을 표시합니다
+    function displayInfowindow(marker, title) {
+        var content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
+
+        infowindow.setContent(content);
+        infowindow.open(map, marker);
+    }
+
+    // 검색결과 목록의 자식 Element를 제거하는 함수입니다
+    function removeAllChildNods(el) {
+        while (el.hasChildNodes()) {
+            el.removeChild (el.lastChild);
+        }
+    }
+</script>
+</div>
+
+</body>
+</html>
