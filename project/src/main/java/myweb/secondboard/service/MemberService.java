@@ -1,18 +1,23 @@
 package myweb.secondboard.service;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import myweb.secondboard.domain.File;
 import myweb.secondboard.domain.Member;
 import myweb.secondboard.domain.Record;
 import myweb.secondboard.dto.MemberSaveForm;
+import myweb.secondboard.dto.MemberUpdateForm;
 import myweb.secondboard.dto.UpdatePasswordForm;
 import myweb.secondboard.repository.MemberRepository;
 import myweb.secondboard.repository.RecordRepository;
 import myweb.secondboard.web.PasswordEncrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional(readOnly = true)
@@ -20,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
   private final MemberRepository memberRepository;
+
+  private final FileService fileService;
 
   private final RecordRepository recordRepository;
 
@@ -66,4 +73,25 @@ public class MemberService {
     member.setPassword(passwordEncrypt.encrypt(form.getUpdatePassword()));
     memberRepository.save(member);
   }
+
+
+  @Transactional
+  public Long updateMember(MemberUpdateForm form, MultipartFile file) throws IOException {
+
+    Member member =findById(form.getId());
+
+    File originFile = member.getFile();
+    byte[] files = fileService.ImgSave(file);
+
+    if(!file.isEmpty()){
+      originFile.updateImgPath(originFile, files);
+    }
+
+    member.updateMember(form, member);
+
+
+    return member.getId();
+  }
+
+
 }

@@ -24,7 +24,5 @@ public class ClubUpdateForm {
 
   private Status status;
 
-  private File file;
-
 
 }

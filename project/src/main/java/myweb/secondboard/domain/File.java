@@ -30,6 +30,7 @@ public class File {
     }
 
     public void  updateImgPath(File originFile, byte[] files){
+
         originFile.setSaveImg(files);
     }
 

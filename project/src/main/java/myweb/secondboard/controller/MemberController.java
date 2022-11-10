@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import myweb.secondboard.domain.Member;
 import myweb.secondboard.dto.FindPasswordForm;
 import myweb.secondboard.dto.MemberSaveForm;
+import myweb.secondboard.dto.MemberUpdateForm;
 import myweb.secondboard.dto.UpdatePasswordForm;
 import myweb.secondboard.service.MemberService;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Controller
@@ -49,17 +51,33 @@ public class MemberController {
     return "redirect:/";
   }
 
-  // TODO
+  // 내정보
   @GetMapping("/profile/{memberId}")
   public String profileHome(@PathVariable("memberId") Long memberId, Model model) {
     Member member = memberService.findById(memberId);
     model.addAttribute("member", member);
 
-
     return "/members/profileHome";
   }
 
 
+
+//  @PostMapping("/profileUpdate")
+//  public String profileUpdate(@Validated @ModelAttribute("member")MemberUpdateForm form,
+//                              BindingResult bindingResult, Model model, MultipartFile file){
+//
+//    if (bindingResult.hasErrors()) {
+//      log.info("errors = {}", bindingResult);
+//      return "/home";
+//    }
+//
+//
+//
+//
+//
+//
+//    return "redirect:/members/profile/"+ memberId;
+//  }
 
 
 

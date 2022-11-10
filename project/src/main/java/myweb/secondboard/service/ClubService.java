@@ -15,8 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -38,9 +40,9 @@ public class ClubService {
   }
 
   @Transactional
-  public Club addClub(ClubSaveForm form, Member member, byte[] photoImg) throws IOException {
+  public Club addClub(ClubSaveForm form, Member member, MultipartFile photoImg) throws IOException {
 
-    File file = File.createImg(photoImg);
+    File file = File.createImg(ImgSave(photoImg));
     fileRepository.save(file);
 
     Club club = Club.createClub(form, file);
@@ -72,15 +74,41 @@ public class ClubService {
   }
 
   @Transactional
-  public Long update(ClubUpdateForm form, byte[] files) {
-    Club club = clubRepository.findOne(form.getId());
+  public Long update(ClubUpdateForm form, MultipartFile file) throws IOException {
 
+    Club club = clubRepository.findOne(form.getId());
     File originFile = club.getFile();
-    originFile.updateImgPath(originFile, files);
+    byte[] files = ImgSave(file);
+
+    if(!file.isEmpty()){
+
+      originFile.updateImgPath(originFile, files);
+
+    }
+
 
     club.updateClub(form, club);
+
     return club.getId();
   }
+
+
+  //base64 인코딩하여 byte [] 형식을 리턴해줌
+  public byte[] ImgSave(MultipartFile file) throws IOException {
+
+    String photoImg = null;
+    byte[] photoEncode = new byte[0];
+
+    if (file != null) {
+      Base64.Encoder encoder = Base64.getEncoder();
+      photoEncode = encoder.encode(file.getBytes());
+      photoImg = new String(photoEncode, "UTF8");
+    }
+    return photoEncode;
+  }
+
+
+
 
   @Transactional
   public void deleteClubMember(Long clubId, Long memberId) {

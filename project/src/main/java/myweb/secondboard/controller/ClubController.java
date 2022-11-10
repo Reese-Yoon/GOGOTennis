@@ -90,7 +90,7 @@ public class ClubController {
   }
 
   @GetMapping("/club/detail/{clubId}")
-  public String clubDetail(@PathVariable("clubId") Long clubId, Model model, HttpServletRequest request) throws UnsupportedEncodingException {
+  public String clubDetail(@PathVariable("clubId") Long clubId, Model model, HttpServletRequest request) {
 
     Club club = clubService.findOne(clubId);
     String src = new String(club.getFile().getSaveImg(), StandardCharsets.UTF_8);
@@ -139,23 +139,27 @@ public class ClubController {
     Member member = (Member) request.getSession(false).getAttribute(SessionConst.LOGIN_MEMBER);
     form.setLeader(member.getNickname());
 
-    Long clubId = clubService.addClub(form, member, ImgSave(file)).getId();
+    Long clubId = clubService.addClub(form, member, file).getId();
     return "redirect:/club/detail/" + clubId;
   }
 
-  //base64 인코딩하여 File에 저장해줌.
-  public byte[] ImgSave(MultipartFile file) throws IOException {
 
-    String photoImg = null;
-    byte[] photoEncode = new byte[0];
+  @PostMapping("/club/update")
+  public String clubUpdate(@Validated @ModelAttribute("form") ClubUpdateForm form,
+                           BindingResult bindingResult, Model model, MultipartFile file) throws IOException {
 
-    if (file != null) {
-      Base64.Encoder encoder = Base64.getEncoder();
-      photoEncode = encoder.encode(file.getBytes());
-      photoImg = new String(photoEncode, "UTF8");
+    if (bindingResult.hasErrors()) {
+      log.info("errors = {}", bindingResult);
+      return "/club/clubDetail";
     }
-    return photoEncode;
+
+    Long clubId = clubService.update(form, file);
+    Club club = clubService.findOne(clubId);
+
+
+    return "redirect:/club/detail/" + clubId;
   }
+
 
   @PostMapping("/club/join")
   public String joinClub(HttpServletRequest request, Long id, HttpServletResponse response) throws IOException {
@@ -179,19 +183,7 @@ public class ClubController {
     return "redirect:/club/detail/" + clubId;
   }
 
-  @PostMapping("/club/update")
-  public String clubUpdate(@Validated @ModelAttribute("form") ClubUpdateForm form,
-                           BindingResult bindingResult, MultipartFile file) throws IOException {
 
-    if (bindingResult.hasErrors()) {
-      log.info("errors = {}", bindingResult);
-      return "/club/clubDetail";
-    }
-
-    Long clubId = clubService.update(form, ImgSave(file));
-
-    return "redirect:/club/detail/" + clubId;
-  }
 
   @PostMapping("/club/memberDelete")
   public String clubMemberDelete(HttpServletRequest request, Long id) {
